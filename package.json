@@ -1,0 +1,41 @@
+{
+  "name": "angular-mixin",
+  "version": "0.1.0",
+  "description": "Extending Angular to provide a mixin() method in an Angular module",
+  "main": "dist/angular-mixin.min.js",
+  "author": {
+    "name" : "Roland Zwaga",
+    "email" : "roland@stackandheap.com",
+    "url" : "http://www.stackandheap.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/StackAndHeap/angular-mixin",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StackAndHeap/angular-mixin.git"
+  },
+  "keywords": [
+    "mixin",
+    "module",
+    "angular",
+    "angularJS"
+  ],
+  "bugs": {
+    "url": "https://github.com/StackAndHeap/angular-mixin/issues"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "gulp": "^3.8.0",
+    "gulp-header": "^1.0.2",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^0.3.0"
+  }
+}

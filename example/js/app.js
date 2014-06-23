@@ -1,6 +1,3 @@
-/**
- * Created by Roland on 6/23/2014.
- */
 var app = angular.module('demo', ['angular-mixin']);
 
 app.trait('testtrait', {

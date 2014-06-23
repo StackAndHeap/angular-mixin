@@ -1,4 +1,4 @@
 angular-mixin
 =============
 
-extends angular module with a mixin() method so that mixins can be configured in an Angular module.
+Extending Angular to provide a mixin() method in an Angular module.

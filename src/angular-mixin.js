@@ -15,15 +15,11 @@
 
         this.register = function (name, instance) {
             traitRegistry[name] = instance;
-        }
+        };
 
         this.$get = [function() {
             return function(name) {
-                var trait = traitRegistry[name];
-                if (angular.isFunction(trait)) {
-                    trait = new trait();
-                }
-                return trait;
+                return traitRegistry[name];
             };
         }];
     }]);
@@ -39,12 +35,17 @@
                     if ((angular.isString(expression)) && (mixinRegistry[expression]) && (ctorRegistry[expression])) {
                         var ctor = ctorRegistry[expression];
                         mixinRegistry[expression].forEach(function(name) {
-                            angular.extend(ctor.prototype, $angularTrait(name));
+                            var trait = $angularTrait(name);
+                            if (angular.isFunction(trait)) {
+                                trait.call(ctor.prototype);
+                            } else {
+                                angular.extend(ctor.prototype, trait);
+                            }
                         });
                         delete ctorRegistry[expression];
                     }
                     return instanceFn(expression, locals);
-                }
+                };
                 return intercept;
             }];
             var registerFn = $controllerProvider.register;
@@ -59,7 +60,7 @@
 
             this.register = function (sourceName, mixins) {
                 mixinRegistry[sourceName] = mixins;
-            }
+            };
 
             this.$get = [function() {
                 return {};
@@ -78,7 +79,7 @@
         if (angular.isString(mixinNames)) {
             mixins = [mixinNames];
         } else if (angular.isArray(mixinNames)) {
-            mixins = mixinNames
+            mixins = mixinNames;
         } else {
             return mod;
         }
@@ -100,6 +101,6 @@
             return trait(mod, name, ctor);
         };
         return mod;
-    }
+    };
 
 })();

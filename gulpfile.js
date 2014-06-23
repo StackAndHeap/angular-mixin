@@ -5,7 +5,8 @@ gulp.task('build', function() {
 		uglify = require('gulp-uglify'),
 		header = require('gulp-header'),
 		pkg = require('./package.json'),
-		banner = ['/**',
+        jshint = require('gulp-jshint'),
+        banner = ['/**',
 	              ' * <%= pkg.name %> - <%= pkg.description %>',
 	              ' * @version v<%= pkg.version %>',
 	              ' * @link <%= pkg.homepage %>',
@@ -15,7 +16,10 @@ gulp.task('build', function() {
 	              ''].join('\n');
 
 	return gulp.src('src/angular-mixin.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'))
 		.pipe(header(banner, { pkg : pkg } ))
+        .pipe(gulp.dest('example/js/'))
 		.pipe(gulp.dest('dist'))
 		.pipe(uglify())
 		.pipe(header(banner, { pkg : pkg } ))

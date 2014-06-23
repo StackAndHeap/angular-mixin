@@ -53,8 +53,15 @@ app.trait('functionaltrait', function() {
 });
 ```
 
+Services kan have mixins just the same:
+```javascript
+app.controller('myService', [function() {
+  //omitted implementation...
+}])
+.mixin('myServiceTrait');
+```
+
 ##Future
 
-* Implement mixins for services
 * Implement mixins for factories
 * Investigate whether AOP-like behavior can be implemented

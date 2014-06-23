@@ -20,7 +20,7 @@ Define a trait:
 app.trait('myTrait', {
     someText: 'This is some text',
     someMethod: function() {
-      alert('Hello there!');
+      alert(this.scope.myMessage);
     }
 });
 ```
@@ -28,8 +28,10 @@ app.trait('myTrait', {
 Mix the trait into one of your controllers:
 ```javascript
 app.controller('myController', ['$scope', function($scope) {
+    this.scope = $scope;
+    this.scope.myMessage = "Hello there!";
     $scope.label = this.someText;
-    $scope.onClick = this.someMethod;
+    $scope.onClick = this.someMethod.bind(this);
 }])
 .mixin('myTrait');
 ```

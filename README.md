@@ -30,7 +30,8 @@ Mix the trait into one of your controllers:
 app.controller('myController', ['$scope', function($scope) {
     $scope.label = this.someText;
     $scope.onClick = this.someMethod;
-}]).mixin('myTrait');
+}])
+.mixin('myTrait');
 ```
 
 And the mixed in behaviour is now available in your view:

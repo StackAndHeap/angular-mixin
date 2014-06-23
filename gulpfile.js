@@ -11,7 +11,7 @@ gulp.task('build', function() {
 	              ' * @version v<%= pkg.version %>',
 	              ' * @link <%= pkg.homepage %>',
 	              ' * @license <%= pkg.license %>',
-	              ' * @author <%= pkg.author %>',
+	              ' * @author <%= pkg.author.name %> <<%= pkg.author.email %>>',
 	              ' */',
 	              ''].join('\n');
 
@@ -19,11 +19,13 @@ gulp.task('build', function() {
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
 		.pipe(header(banner, { pkg : pkg } ))
-        .pipe(gulp.dest('example/js/'))
+        .pipe(gulp.dest('example/intercepts/js/'))
+        .pipe(gulp.dest('example/mixins/js/'))
 		.pipe(gulp.dest('dist'))
 		.pipe(uglify())
 		.pipe(header(banner, { pkg : pkg } ))
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('dist'))
-        .pipe(gulp.dest('example/js/'));
+        .pipe(gulp.dest('example/intercepts/js/'))
+        .pipe(gulp.dest('example/mixins/js/'))
 });

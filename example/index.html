@@ -8,10 +8,12 @@
     <script type="text/javascript" src="js/app.js"></script>
 </head>
 <body data-ng-app="demo">
-    <div data-ng-controller="testController">{{message}}</div>
+<div data-ng-controller="testController">
+    <button data-ng-click="onClick()">{{message}}</button>
+</div>
     <br/>
-    <div data-ng-controller="testController">
-        <button data-ng-click="onClick()">{{message}}</button>
+    <div data-ng-controller="testController2">
+        <button data-ng-click="onClick()">{{label}}</button>
     </div>
 </body>
 </html>

@@ -5,6 +5,13 @@
  * @license MIT
  * @author [object Object]
  */
+/**
+ * angular-mixin - Extending Angular to provide a mixin() method in an Angular module
+ * @version v0.1.0
+ * @link https://github.com/StackAndHeap/angular-mixin
+ * @license MIT
+ * @author [object Object]
+ */
 (function() {
     'use strict';
     var angularmixin = angular.module('angular-mixin', ['ng']);
@@ -70,6 +77,7 @@
     function trait(mod, name, ctor) {
         var invocation = [name, ctor];
         mod._invokeQueue.push(["$angularTraitProvider", "register", invocation]);
+        return mod;
     }
 
     function mixin(mod, mixinNames) {
@@ -93,10 +101,10 @@
     angular.module = function (name, requires, configFn) {
         var mod = moduleFn(name, requires, configFn);
         mod.mixin = function(mixinNames){
-            mixin(mod, mixinNames);
+            return mixin(mod, mixinNames);
         };
         mod.trait = function(name, ctor){
-            trait(mod, name, ctor);
+            return trait(mod, name, ctor);
         };
         return mod;
     }

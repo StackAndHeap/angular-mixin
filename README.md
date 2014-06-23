@@ -55,7 +55,7 @@ app.trait('functionaltrait', function() {
 
 Services kan have mixins just the same:
 ```javascript
-app.controller('myService', [function() {
+app.service('myService', [function() {
   //omitted implementation...
 }])
 .mixin('myServiceTrait');

@@ -43,6 +43,16 @@ And the mixed in behaviour is now available in your view:
 </div>
 ```
 
+Functional mixins are supported as well:
+```javascript
+app.trait('functionaltrait', function() {
+    this.alertMe = function() {
+        alert('Hello again!');
+    };
+    return this;
+});
+```
+
 ##Future
 
 * Implement mixins for services

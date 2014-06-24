@@ -17,12 +17,14 @@ var app = angular.module('myModule', ['angular-mixin']);
 
 Define a trait:
 ```javascript
-app.trait('myTrait', {
-    someText: 'This is some text',
-    someMethod: function() {
-      alert(this.scope.myMessage);
-    }
-});
+app.config(['$angularTraitProvider', function($angularTrait){
+    $angularTrait.register('myTrait', {
+        mixinMessage: 'This is my mixed in message',
+        someMethod:function() {
+            alert(this.scope.myMessage);
+        }
+    })
+}];
 ```
 
 Mix the trait into one of your controllers:
@@ -33,7 +35,9 @@ app.controller('myController', ['$scope', function($scope) {
     $scope.label = this.someText;
     $scope.onClick = this.someMethod.bind(this);
 }])
-.mixin('myTrait');
+.config(['$angularMixinProvider', function($angularMixin) {
+    $angularMixin.register('myController', 'myTrait')
+}]);
 ```
 
 And the mixed in behaviour is now available in your view:
@@ -45,12 +49,14 @@ And the mixed in behaviour is now available in your view:
 
 Functional mixins are supported as well:
 ```javascript
-app.trait('functionaltrait', function() {
-    this.alertMe = function() {
+app.config(['$angularTraitProvider', function($angularTrait){
+    $angularTrait.register('functionalTrait', function() {
+      this.alertMe = function() {
         alert('Hello again!');
+      }
     };
     return this;
-});
+}]);
 ```
 
 Services kan have mixins just the same:
@@ -58,7 +64,9 @@ Services kan have mixins just the same:
 app.service('myService', [function() {
   //omitted implementation...
 }])
-.mixin('myServiceTrait');
+.config(['$angularMixinProvider', function($angularMixin) {
+    $angularMixin.register('myService', 'functionalTrait')
+}]);
 ```
 
 ##Future

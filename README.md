@@ -9,7 +9,7 @@ So, don't use this in production, but ideas, comments and criticism are very wel
 
 ## Installation
 
-AngularJS is the only dependency.
+AngularJS is the only dependency. (Currently testing with version 0.2.18)
 
 Add the angular-mixin dependency to your Angular module definition:
 

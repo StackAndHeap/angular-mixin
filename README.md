@@ -2,6 +2,10 @@ angular-mixin
 =============
 
 Angular providers for defining traits as mixins for Angular objects.
+Also implements some vasic AOP style interception.
+
+Attention: _This code is all pretty experimental/unoptimized and serves as a proof of concept right now.
+So, don't use this in production, but ideas, comments and criticism are very welcome._
 
 ## Installation
 
@@ -69,7 +73,45 @@ app.service('myService', [function() {
 }]);
 ```
 
+##Method interception
+
+To intercept a method on a controller register your interceptor like this:
+```javascript
+app.controller('testController', ['$scope', function($scope) {
+    this.scope = $scope;
+    this.onClick = function($event, msg) {
+        alert(msg);
+    };
+    this.scope.onClick = this.onClick.bind(this);
+}]);
+
+app.config(['$angularMixinProvider', function($angularMixinProvider){
+    $angularMixinProvider.registerInterceptor('testController.onClick', function(instance, methodName, originalMethod, args) {
+        args[1] = "Intercepted hello!";
+    });
+}]);
+```
+With HTML like this:
+```html
+<div data-ng-controller="testController">
+  <button data-ng-click="onClick($event, 'Hello?')">Click me</button>
+</div>
+```
+Now, after clicking the button the alert will show 'Intercepted hello!'.
+
+The interceptor signature should look like this:
+```javascript
+function(instance, methodName, originalMethod, args);
+```
+Where:
+* instance is the original object whose method is being intercepted
+* methodName is the name of the intercepted method,
+* originalMethod is the actual function reference to the intercepted method
+* args is the arguments object that was passed to the original method.
+
+
 ##Future
 
+* Implement interceptors for services
+* Implement interceptors for factories
 * Implement mixins for factories
-* Investigate whether AOP-like behavior can be implemented

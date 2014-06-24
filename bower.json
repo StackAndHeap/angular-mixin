@@ -1,6 +1,6 @@
 {
   "name": "angular-mixin",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Angular providers for defining traits as mixins for Angular objects ",
   "main": "dist/angular-mixin.min.js",
   "homepage": "https://github.com/StackAndHeap/angular-mixin",
@@ -11,6 +11,8 @@
   "keywords": [
     "mixin",
     "intercept",
+    "AOP",
+    "Javascript"
     "provider",
     "module",
     "angular",

@@ -9,7 +9,8 @@
 </head>
 <body data-ng-app="demo">
     <div data-ng-controller="testController">
-        <button data-ng-click="onClick($event)">Click me</button>
+        <button data-ng-click="onClick($event, 'Hello?')">Click me</button>
+        <input type="text" data-ng-model="mdl" data-ng-change="onChange()"/>
     </div>
 </body>
 </html>

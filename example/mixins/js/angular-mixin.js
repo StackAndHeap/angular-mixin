@@ -1,6 +1,6 @@
 /**
- * angular-mixin - Extending Angular to provide a mixin() method in an Angular module
- * @version v0.2.0
+ * angular-mixin - Angular providers for defining traits as mixins for Angular objects
+ * @version v0.3.0
  * @link https://github.com/StackAndHeap/angular-mixin
  * @license MIT
  * @author Roland Zwaga <roland@stackandheap.com>
@@ -8,6 +8,7 @@
 (function() {
     'use strict';
     var angularmixin = angular.module('angular-mixin', ['ng']);
+    var methodInjectorInstance;
 
     angularmixin.provider('$angularTrait', [function() {
 
@@ -32,6 +33,7 @@
             var ctorRegistry = {};
             var getFn = $controllerProvider.$get;
             var instanceInjector;
+            methodInjectorInstance = new MethodInjector();
 
             function extend(ctor, targetName, mixinReg, ctorReg, $angularTrait){
                 mixinReg[targetName].forEach(function(name) {
@@ -59,9 +61,12 @@
                 };
             }
 
-            function interceptMethod(targetName, interceptorReg, ctorReg) {
+            function interceptMethods(targetName, interceptorReg) {
                 if (!angular.isString(targetName)) {
                     return;
+                }
+                if (interceptorReg[targetName]) {
+                    methodInjectorInstance.injectInterceptors(targetName, interceptorReg);
                 }
             }
 
@@ -76,8 +81,15 @@
                         var ctor = ctorRegistry[expression];
                         extend(ctor, expression, mixinRegistry, ctorRegistry, $angularTrait);
                     }
-                    interceptMethod(expression, interceptorRegistry, ctorRegistry);
-                    return instanceFn(expression, locals);
+                    var originalBind = Function.prototype.bind;
+                    var instance;
+                    try {
+                        interceptMethods(expression, interceptorRegistry);
+                        instance = instanceFn(expression, locals);
+                    } finally {
+                        Function.prototype.bind = originalBind;
+                    }
+                    return instance;
                 };
                 return intercept;
             }];
@@ -112,7 +124,15 @@
 
             this.registerInterceptor = function (pointcut, interceptor) {
                 var parts = pointcut.split('.');
-                interceptorRegistry[parts[0]] = [parts[1], interceptor];
+                var targetName = parts[0];
+                var methodName = parts[1];
+                if (!interceptorRegistry[targetName]) {
+                    interceptorRegistry[targetName] = {};
+                }
+                if (!interceptorRegistry[targetName][methodName]) {
+                    interceptorRegistry[targetName][methodName] = [];
+                }
+                interceptorRegistry[targetName][methodName].push(interceptor);
                 return this;
             };
 
@@ -121,4 +141,50 @@
             }];
         }
     ]);
+
+    var MethodInjector = function() {
+
+        this.injectInterceptors = function(targetName, interceptorReg) {
+            var ib = Function.prototype.bind;
+            Function.prototype.bind = function() {
+                var _this = this;
+                var obj = arguments[0];
+                var fnName = findMethodName(_this, obj);
+                var intercept = _this;
+                if (fnName) {
+                    intercept = function () {
+                        var interceptors = findInterceptorMethods(fnName, targetName, interceptorReg);
+                        var fn = function () {
+                            for (var i = 0, ii = interceptors.length; i < ii; i++) {
+                                var args = [obj, fnName, _this, arguments];
+                                interceptors[i].apply(obj, args);
+                            }
+                            return _this.apply(obj, arguments);
+                        };
+                        return fn.apply(obj, arguments);
+                    };
+                }
+                return ib.apply(intercept, arguments);
+            };
+        };
+
+        function findMethodName(fn, obj) {
+            for(var name in obj) {
+                if (obj[name] === fn) {
+                    return name;
+                }
+            }
+            return null;
+        }
+
+        function findInterceptorMethods(funcName, targetName, interceptorReg) {
+            var methodInterceptorInfo = interceptorReg[targetName];
+            if (!methodInterceptorInfo) {
+                return null;
+            } else {
+                return methodInterceptorInfo[funcName];
+            }
+        }
+
+    };
 })();

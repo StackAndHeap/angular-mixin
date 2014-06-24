@@ -110,8 +110,6 @@ Where:
 * args is the arguments object that was passed to the original method.
 
 
-##Future
+##TODO
 
-* Implement interceptors for services
-* Implement interceptors for factories
 * Implement mixins for factories

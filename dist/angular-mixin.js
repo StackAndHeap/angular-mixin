@@ -1,6 +1,6 @@
 /**
  * angular-mixin - Angular providers for defining traits as mixins for Angular objects
- * @version v0.3.0
+ * @version v0.3.1
  * @link https://github.com/StackAndHeap/angular-mixin
  * @license MIT
  * @author Roland Zwaga <roland@stackandheap.com>
@@ -47,7 +47,7 @@
                 delete ctorReg[targetName];
             }
 
-            function interceptInstantiate(injector, $angularTrait) {
+            function interceptInstantiate(injector, $angularTrait, interceptorReg) {
                 var instantiateFn = injector.instantiate;
                 instanceInjector.instantiate = function(Type, locals) {
                     var innerCtor = Type;
@@ -57,25 +57,33 @@
                     if ((innerCtor.$$ngName) && (mixinRegistry[innerCtor.$$ngName])) {
                         extend(innerCtor, innerCtor.$$ngName, mixinRegistry, ctorRegistry, $angularTrait);
                     }
-                    return instantiateFn(Type, locals);
+                    var instance = instantiateFn(Type, locals);
+                    if (innerCtor.$$ngName) {
+                        interceptInstanceMethods(instance, innerCtor.$$ngName, interceptorReg);
+                    }
+                    return instance;
                 };
             }
 
             function interceptCtorMethods(targetName, interceptorReg) {
                 if (!angular.isString(targetName)) {
-                    return;
+                    targetName = targetName.$$ngName;
                 }
-                if (interceptorReg[targetName]) {
-                    methodInjectorInstance.injectCtorInterceptors(targetName, interceptorReg);
+                if (targetName) {
+                    if (interceptorReg[targetName]) {
+                        methodInjectorInstance.injectCtorInterceptors(targetName, interceptorReg);
+                    }
                 }
             }
 
             function interceptInstanceMethods(instance, targetName, interceptorReg) {
                 if (!angular.isString(targetName)) {
-                    return;
+                    targetName = targetName.$$ngName;
                 }
-                if (interceptorReg[targetName]) {
-                    methodInjectorInstance.injectInstanceMethods(instance, targetName, interceptorReg);
+                if (targetName) {
+                    if (interceptorReg[targetName]) {
+                        methodInjectorInstance.injectInstanceMethods(instance, targetName, interceptorReg);
+                    }
                 }
             }
 
@@ -84,7 +92,7 @@
                 var intercept = function(expression, locals) {
                     if (!instanceInjector) {
                         instanceInjector = $rootElement.data("$injector");
-                        interceptInstantiate(instanceInjector, $angularTrait);
+                        interceptInstantiate(instanceInjector, $angularTrait, interceptorRegistry);
                     }
                     if ((angular.isString(expression)) && (mixinRegistry[expression]) && (ctorRegistry[expression])) {
                         var ctor = ctorRegistry[expression];
@@ -95,7 +103,6 @@
                     try {
                         interceptCtorMethods(expression, interceptorRegistry);
                         instance = instanceFn(expression, locals);
-                        interceptInstanceMethods(instance, expression, interceptorRegistry);
                     } finally {
                         Function.prototype.bind = originalBind;
                     }
@@ -110,6 +117,7 @@
                 if (angular.isArray(innerCtor)) {
                     innerCtor = innerCtor[innerCtor.length-1];
                 }
+                innerCtor.$$ngName = name;
                 ctorRegistry[name] = innerCtor;
                 registerFn(name, constructor);
             };

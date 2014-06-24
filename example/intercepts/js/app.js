@@ -13,13 +13,15 @@ var ctrl1 = function($scope, testService) {
         _this.onChange();
     };
 
-    this.onChange(null);
+    testService.doStuff();
 }
 
 app.controller('testController', ['$scope', 'testService', ctrl1]);
 
 app.service('testService', [function() {
-    //I don't do anything on my own...
+    this.doStuff = function() {
+
+    }
 }]);
 
 
@@ -29,5 +31,8 @@ app.config(['$angularMixinProvider', function($angularMixinProvider){
     })
     .registerInterceptor('testController.onChange', function(instance, methodName, originalMethod, args) {
         console.log('changed!');
+    })
+    .registerInterceptor('testService.doStuff', function(instance, methodName, originalMethod, args) {
+        console.log('doStuff!');
     });
 }]);

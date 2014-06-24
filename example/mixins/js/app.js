@@ -16,7 +16,7 @@ app.controller('testController2', ['$scope', 'testService', function($scope, tes
     testService.alertMe();
 }]);
 
-app.service('testService', [function() {
+app.service('testService', ['$controller', function($controller) {
     //I don't do anything on my own...
 }]);
 

@@ -61,12 +61,21 @@
                 };
             }
 
-            function interceptMethods(targetName, interceptorReg) {
+            function interceptCtorMethods(targetName, interceptorReg) {
                 if (!angular.isString(targetName)) {
                     return;
                 }
                 if (interceptorReg[targetName]) {
-                    methodInjectorInstance.injectInterceptors(targetName, interceptorReg);
+                    methodInjectorInstance.injectCtorInterceptors(targetName, interceptorReg);
+                }
+            }
+
+            function interceptInstanceMethods(instance, targetName, interceptorReg) {
+                if (!angular.isString(targetName)) {
+                    return;
+                }
+                if (interceptorReg[targetName]) {
+                    methodInjectorInstance.injectInstanceMethods(instance, targetName, interceptorReg);
                 }
             }
 
@@ -84,8 +93,9 @@
                     var originalBind = Function.prototype.bind;
                     var instance;
                     try {
-                        interceptMethods(expression, interceptorRegistry);
+                        interceptCtorMethods(expression, interceptorRegistry);
                         instance = instanceFn(expression, locals);
+                        interceptInstanceMethods(instance, expression, interceptorRegistry);
                     } finally {
                         Function.prototype.bind = originalBind;
                     }
@@ -144,7 +154,7 @@
 
     var MethodInjector = function() {
 
-        this.injectInterceptors = function(targetName, interceptorReg) {
+        this.injectCtorInterceptors = function(targetName, interceptorReg) {
             var ib = Function.prototype.bind;
             Function.prototype.bind = function() {
                 var _this = this;
@@ -167,6 +177,26 @@
                 return ib.apply(intercept, arguments);
             };
         };
+
+        this.injectInstanceMethods = function(instance, targetName, interceptorReg) {
+            var methodInterceptorInfo = interceptorReg[targetName];
+            for(var fnName in methodInterceptorInfo) {
+                if (instance.hasOwnProperty(fnName)) {
+                    injectInstanceMethod(instance, fnName, methodInterceptorInfo[fnName]);
+                }
+            }
+        };
+
+        function injectInstanceMethod(instance, fnName, interceptors) {
+            var originalFn = instance[fnName];
+            instance[fnName] = function() {
+                for (var i = 0, ii = interceptors.length; i < ii; i++) {
+                    var args = [instance, fnName, originalFn, arguments];
+                    interceptors[i].apply(instance, args);
+                }
+                return originalFn.apply(instance, arguments);
+            };
+        }
 
         function findMethodName(fn, obj) {
             for(var name in obj) {

@@ -1,3 +1,6 @@
+# 0.3.1 (...)
+* Added instance method interceptions.
+
 # 0.3.0 (24 June 2014)
 * Implemented first experimental pieces of AOP style method interception.
 

@@ -1,6 +1,6 @@
 {
   "name": "angular-mixin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Extending Angular to provide a mixin() method in an Angular module",
   "main": "dist/angular-mixin.min.js",
   "homepage": "https://github.com/StackAndHeap/angular-mixin",

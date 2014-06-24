@@ -1,7 +1,7 @@
 angular-mixin
 =============
 
-Extending Angular to provide a mixin() method in an Angular module.
+Angular providers for defining traits as mixins for Angular objects.
 
 ## Installation
 

@@ -23,7 +23,7 @@ app.config(['$angularTraitProvider', function($angularTrait){
         someMethod:function() {
             alert(this.scope.myMessage);
         }
-    })
+    });
 }];
 ```
 
@@ -36,7 +36,7 @@ app.controller('myController', ['$scope', function($scope) {
     $scope.onClick = this.someMethod.bind(this);
 }])
 .config(['$angularMixinProvider', function($angularMixin) {
-    $angularMixin.register('myController', 'myTrait')
+    $angularMixin.register('myController', 'myTrait');
 }]);
 ```
 
@@ -53,9 +53,9 @@ app.config(['$angularTraitProvider', function($angularTrait){
     $angularTrait.register('functionalTrait', function() {
       this.alertMe = function() {
         alert('Hello again!');
-      }
-    };
-    return this;
+      };
+      return this;
+    }
 }]);
 ```
 
@@ -65,7 +65,7 @@ app.service('myService', [function() {
   //omitted implementation...
 }])
 .config(['$angularMixinProvider', function($angularMixin) {
-    $angularMixin.register('myService', 'functionalTrait')
+    $angularMixin.register('myService', 'functionalTrait');
 }]);
 ```
 

@@ -2,7 +2,7 @@ angular-mixin
 =============
 
 Angular providers for defining traits as mixins for Angular objects.
-Also implements some vasic AOP style interception.
+Also implements some basic AOP style interception.
 
 Attention: _This code is all pretty experimental/unoptimized and serves as a proof of concept right now.
 So, don't use this in production, but ideas, comments and criticism are very welcome._

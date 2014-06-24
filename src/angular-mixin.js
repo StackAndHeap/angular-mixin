@@ -50,7 +50,7 @@
                     if ((innerCtor.$$ngName) && (mixinRegistry[innerCtor.$$ngName])) {
                         extend(innerCtor, innerCtor.$$ngName, mixinRegistry, ctorRegistry, $angularTrait);
                     }
-                    var instance = instantiateFn(Type, locals);
+                    var instance = instantiateFn.call(injector, Type, locals);
                     if (innerCtor.$$ngName) {
                         interceptInstanceMethods(instance, innerCtor.$$ngName, interceptorReg);
                     }
@@ -95,7 +95,7 @@
                     var instance;
                     try {
                         interceptCtorMethods(expression, interceptorRegistry);
-                        instance = instanceFn(expression, locals);
+                        instance = instanceFn.call($controllerProvider, expression, locals);
                     } finally {
                         Function.prototype.bind = originalBind;
                     }
@@ -112,7 +112,7 @@
                 }
                 innerCtor.$$ngName = name;
                 ctorRegistry[name] = innerCtor;
-                registerFn(name, constructor);
+                registerFn.call($controllerProvider, name, constructor);
             };
 
             var serviceFn = $provide.service;
@@ -122,8 +122,18 @@
                     innerCtor = innerCtor[innerCtor.length-1];
                 }
                 innerCtor.$$ngName = name;
-                return serviceFn(name, constructor);
+                return serviceFn.call($provide, name, constructor);
             };
+
+            /*var factoryFn = $provide.factory;
+            $provide.factory = function(name, constructor) {
+                var innerCtor = constructor;
+                if (angular.isArray(innerCtor)) {
+                    innerCtor = innerCtor[innerCtor.length-1];
+                }
+                innerCtor.$$ngName = name;
+                return factoryFn.call($provide, name, constructor);
+            };*/
 
             this.register = function (sourceName, mixins) {
                 if (angular.isString(mixins)) {

@@ -1,7 +1,7 @@
 {
   "name": "angular-mixin",
   "version": "0.2.1",
-  "description": "Extending Angular to provide a mixin() method in an Angular module",
+  "description": "Angular providers for defining traits as mixins for Angular objects",
   "main": "dist/angular-mixin.min.js",
   "author": {
     "name": "Roland Zwaga",

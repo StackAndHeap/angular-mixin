@@ -1,7 +1,7 @@
 {
   "name": "angular-mixin",
   "version": "0.2.1",
-  "description": "Extending Angular to provide a mixin() method in an Angular module",
+  "description": "Angular providers for defining traits as mixins for Angular objects ",
   "main": "dist/angular-mixin.min.js",
   "homepage": "https://github.com/StackAndHeap/angular-mixin",
   "authors": [
@@ -10,12 +10,16 @@
   "license": "MIT",
   "keywords": [
     "mixin",
+    "intercept",
+    "provider",
     "module",
     "angular",
     "angularJS"
   ],
   "ignore": [
     "**/.*",
+    ".idea",
+    "angular-mixin.iml",
     "node_modules",
     "bower_components",
     "src",

@@ -1,12 +1,12 @@
 {
   "name": "angular-mixin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Extending Angular to provide a mixin() method in an Angular module",
   "main": "dist/angular-mixin.min.js",
   "author": {
-    "name" : "Roland Zwaga",
-    "email" : "roland@stackandheap.com",
-    "url" : "http://www.stackandheap.com"
+    "name": "Roland Zwaga",
+    "email": "roland@stackandheap.com",
+    "url": "http://www.stackandheap.com"
   },
   "license": "MIT",
   "homepage": "https://github.com/StackAndHeap/angular-mixin",

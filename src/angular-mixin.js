@@ -8,6 +8,7 @@
 
         this.register = function (name, instance) {
             traitRegistry[name] = instance;
+            return this;
         };
 
         this.$get = [function() {
@@ -24,6 +25,19 @@
             var ctorRegistry = {};
             var getFn = $controllerProvider.$get;
             var instanceInjector;
+
+            function extend(ctor, targetName, mixinReg, ctorReg, $angularTrait){
+                mixinReg[targetName].forEach(function(name) {
+                    var trait = $angularTrait(name);
+                    if (angular.isFunction(trait)) {
+                        trait.call(ctor.prototype);
+                    } else {
+                        angular.extend(ctor.prototype, trait);
+                    }
+                });
+                delete ctorReg[targetName];
+            }
+
             function interceptInstantiate(injector, $angularTrait) {
                 var instantiateFn = injector.instantiate;
                 instanceInjector.instantiate = function(Type, locals) {
@@ -32,18 +46,16 @@
                         innerCtor = innerCtor[innerCtor.length-1];
                     }
                     if ((innerCtor.$$ngName) && (mixinRegistry[innerCtor.$$ngName])) {
-                        mixinRegistry[innerCtor.$$ngName].forEach(function(name) {
-                            var trait = $angularTrait(name);
-                            if (angular.isFunction(trait)) {
-                                trait.call(innerCtor.prototype);
-                            } else {
-                                angular.extend(innerCtor.prototype, trait);
-                            }
-                        });
-                        delete ctorRegistry[innerCtor.$$ngName];
+                        extend(innerCtor, innerCtor.$$ngName, mixinRegistry, ctorRegistry, $angularTrait);
                     }
                     return instantiateFn(Type, locals);
                 };
+            }
+
+            function interceptMethod(targetName, interceptorReg, ctorReg) {
+                if (!angular.isString(targetName)) {
+                    return;
+                }
             }
 
             $controllerProvider.$get = ['$injector', '$window', '$angularTrait', '$rootElement', function($injector, $window, $angularTrait, $rootElement) {
@@ -55,16 +67,9 @@
                     }
                     if ((angular.isString(expression)) && (mixinRegistry[expression]) && (ctorRegistry[expression])) {
                         var ctor = ctorRegistry[expression];
-                        mixinRegistry[expression].forEach(function(name) {
-                            var trait = $angularTrait(name);
-                            if (angular.isFunction(trait)) {
-                                trait.call(ctor.prototype);
-                            } else {
-                                angular.extend(ctor.prototype, trait);
-                            }
-                        });
-                        delete ctorRegistry[expression];
+                        extend(ctor, expression, mixinRegistry, ctorRegistry, $angularTrait);
                     }
+                    interceptMethod(expression, interceptorRegistry, ctorRegistry);
                     return instanceFn(expression, locals);
                 };
                 return intercept;
@@ -90,12 +95,18 @@
                 return serviceFn(name, constructor);
             };
 
-            this.registerMixin = function (sourceName, mixins) {
+            this.register = function (sourceName, mixins) {
+                if (angular.isString(mixins)) {
+                    mixins = [mixins];
+                }
                 mixinRegistry[sourceName] = mixins;
+                return this;
             };
 
-            this.registerInterceptor = function (sourceName, mixins) {
-                interceptorRegistry[sourceName] = mixins;
+            this.registerInterceptor = function (pointcut, interceptor) {
+                var parts = pointcut.split('.');
+                interceptorRegistry[parts[0]] = [parts[1], interceptor];
+                return this;
             };
 
             this.$get = [function() {
@@ -103,51 +114,4 @@
             }];
         }
     ]);
-
-    function trait(mod, name, ctor) {
-        var invocation = [name, ctor];
-        mod._invokeQueue.push(["$angularTraitProvider", "register", invocation]);
-        return mod;
-    }
-
-    function mixin(mod, mixinNames) {
-        var mixins;
-        if (angular.isString(mixinNames)) {
-            mixins = [mixinNames];
-        } else if (angular.isArray(mixinNames)) {
-            mixins = mixinNames;
-        } else {
-            return mod;
-        }
-        var invocation;
-        var prevInvoc = mod._invokeQueue[mod._invokeQueue.length - 1];
-        if (prevInvoc[0] === "$controllerProvider") {
-            invocation = [prevInvoc[2][0], mixins];
-            mod._invokeQueue.push(["$angularMixinProvider", "registerMixin", invocation]);
-        } else if ((prevInvoc[0] === "$provide") && (prevInvoc[1] === "service")){
-            invocation = [prevInvoc[2][0], mixins];
-            mod._invokeQueue.push(["$angularMixinProvider", "registerMixin", invocation]);
-        }
-        return mod;
-    }
-
-    function intercept(mod) {
-        return mod;
-    }
-
-    var moduleFn = angular.module;
-    angular.module = function (name, requires, configFn) {
-        var mod = moduleFn(name, requires, configFn);
-        mod.mixin = function(mixinNames){
-            return mixin(mod, mixinNames);
-        };
-        mod.trait = function(name, ctor){
-            return trait(mod, name, ctor);
-        };
-        mod.intercept = function(){
-            return intercept(mod);
-        };
-        return mod;
-    };
-
 })();

@@ -113,3 +113,4 @@ Where:
 ##TODO
 
 * Implement mixins for factories
+* Implement wildcards and regex for mixin targets. (i.e. $angularMixin.register('*Service', 'serviceTrait'))

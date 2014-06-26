@@ -36,7 +36,7 @@ app.config(['$angularTraitProvider', '$angularMixinProvider', function($angularT
     .register('servicetrait', function() {
             this.alertMe = function() {
                 alert("This is a message from my service trait");
-            }
+            };
             return this;
     });
 

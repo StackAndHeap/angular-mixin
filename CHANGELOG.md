@@ -1,4 +1,4 @@
-# 0.3.1 (...)
+# 0.3.1 (24 June 2014)
 * Added instance method interceptions.
 * Added service method interception.
 

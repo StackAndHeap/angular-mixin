@@ -172,27 +172,27 @@
 
     var MethodInjector = function() {
 
-        this.injectCtorInterceptors = function(targetName, interceptorReg) {
-            var ib = Function.prototype.bind;
+        this.injectCtorInterceptors = function(targetName, interceptorRegistry) {
+            var originalBindMethod = Function.prototype.bind;
             Function.prototype.bind = function() {
-                var _this = this;
-                var obj = arguments[0];
-                var fnName = findMethodName(_this, obj);
-                var intercept = _this;
-                if (fnName) {
+                var _boundMethod = this;
+                var methodOwner = arguments[0];
+                var methodName = findMethodName(_boundMethod, methodOwner);
+                var intercept = _boundMethod;
+                if (methodName) {
                     intercept = function () {
-                        var interceptors = findInterceptorMethods(fnName, targetName, interceptorReg);
-                        var fn = function () {
-                            for (var i = 0, ii = interceptors.length; i < ii; i++) {
-                                var args = [obj, fnName, _this, arguments];
-                                interceptors[i].apply(obj, args);
+                        var interceptorMethods = findInterceptorMethods(methodName, targetName, interceptorRegistry);
+                        var methodOverride = function () {
+                            for (var i = 0, ii = interceptorMethods.length; i < ii; i++) {
+                                var args = [methodOwner, methodName, _boundMethod, arguments];
+                                interceptorMethods[i].apply(methodOwner, args);
                             }
-                            return _this.apply(obj, arguments);
+                            return _boundMethod.apply(methodOwner, arguments);
                         };
-                        return fn.apply(obj, arguments);
+                        return methodOverride.apply(methodOwner, arguments);
                     };
                 }
-                return ib.apply(intercept, arguments);
+                return originalBindMethod.apply(intercept, arguments);
             };
         };
 

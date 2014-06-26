@@ -171,9 +171,9 @@
                 var _boundMethod = this;
                 var methodOwner = arguments[0];
                 var methodName = findMethodName(_boundMethod, methodOwner);
-                var intercept = _boundMethod;
+                var boundMethodOverride = _boundMethod;
                 if (methodName) {
-                    intercept = function () {
+                    boundMethodOverride = function () {
                         var interceptorMethods = findInterceptorMethods(methodName, targetName, interceptorRegistry);
                         var methodOverride = function () {
                             for (var i = 0, ii = interceptorMethods.length; i < ii; i++) {
@@ -185,7 +185,7 @@
                         return methodOverride.apply(methodOwner, arguments);
                     };
                 }
-                return originalBindMethod.apply(intercept, arguments);
+                return originalBindMethod.apply(boundMethodOverride, arguments);
             };
         };
 
